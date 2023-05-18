@@ -1,0 +1,39 @@
+version: '3.3'
+
+volumes:
+  data:
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    container_name: snipeit-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    container_name: snipeit-phpmyadmin
+    ports:
+      - 10003:80
+    environment:
+      - PMA_ARBITRARY=1
+
+  api:
+    image: snipe/snipe-it
+    container_name: snipeit-api
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    ports:
+      - 10002:80
+    
